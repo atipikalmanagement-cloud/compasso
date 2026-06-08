@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Localizador de Propostas · Mais Consultores Compasso</title>
+<link rel="icon" href="public/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1C1C22; --orange:#F17E13; --orange-d:#C9650A; --grey:#878785;
+    --soft:#F4F4F2; --line:#E3E3E0; --white:#fff; --ink-2:#2A2A30;
+    --green:#1D9E75; --shadow:0 1px 3px rgba(0,0,0,.06),0 8px 24px rgba(0,0,0,.05);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{font-family:'Manrope',sans-serif;color:var(--ink);background:var(--soft);line-height:1.6;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:980px;margin:0 auto;padding:0 20px;}
+
+  header{background:var(--ink);color:#fff;}
+  .hbar{display:flex;align-items:center;justify-content:space-between;padding:18px 0;}
+  header img{height:42px;display:block;}
+  .htag{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--grey);font-weight:600;}
+  .hero{padding:8px 0 40px;}
+  .hero h1{font-size:34px;font-weight:800;letter-spacing:-0.5px;line-height:1.1;}
+  .hero h1 .o{color:var(--orange);}
+  .hero p{font-size:16px;color:#C9C9CC;margin-top:10px;max-width:640px;}
+
+  main{padding:32px 0 64px;}
+  .card{background:var(--white);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:28px;margin-bottom:24px;}
+  .card h2{font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--grey);font-weight:700;margin-bottom:4px;}
+  .card .lead{font-size:20px;font-weight:700;margin-bottom:20px;letter-spacing:-0.3px;}
+
+  .group{margin-bottom:22px;}
+  .group h3{font-size:14px;font-weight:700;color:var(--ink);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+  .group h3 .dot{width:8px;height:8px;border-radius:50%;background:var(--orange);display:inline-block;}
+  .opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;}
+  label.opt{display:flex;align-items:flex-start;gap:11px;padding:12px 14px;border:1px solid var(--line);border-radius:10px;cursor:pointer;transition:all .15s;background:var(--white);user-select:none;}
+  label.opt:hover{border-color:var(--orange);background:#FFFBF6;}
+  label.opt.on{border-color:var(--orange);background:#FFF4E8;box-shadow:inset 0 0 0 1px var(--orange);}
+  label.opt input{appearance:none;-webkit-appearance:none;width:20px;height:20px;border:2px solid var(--grey);border-radius:5px;flex-shrink:0;margin-top:1px;cursor:pointer;position:relative;transition:all .15s;}
+  label.opt input:checked{background:var(--orange);border-color:var(--orange);}
+  label.opt input:checked::after{content:'';position:absolute;left:6px;top:2px;width:5px;height:10px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg);}
+  label.opt span{font-size:14px;line-height:1.45;}
+
+  .actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:8px;}
+  button{font-family:inherit;font-weight:700;font-size:15px;border:none;border-radius:10px;cursor:pointer;transition:all .15s;}
+  .btn-primary{background:var(--orange);color:#fff;padding:14px 28px;}
+  .btn-primary:hover{background:var(--orange-d);}
+  .btn-primary:disabled{background:var(--line);color:var(--grey);cursor:not-allowed;}
+  .btn-ghost{background:transparent;color:var(--ink);padding:14px 18px;border:1px solid var(--line);}
+  .btn-ghost:hover{border-color:var(--grey);}
+  .hint{font-size:13px;color:var(--grey);}
+
+  /* RESULT */
+  #result{display:none;}
+  #result.show{display:block;animation:fade .4s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+  .res-head{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+  .res-head .tag{background:#E1F5EE;color:#0F6E56;font-size:12px;font-weight:700;padding:4px 12px;border-radius:20px;}
+  .res-title{font-size:30px;font-weight:800;letter-spacing:-0.5px;margin:6px 0 4px;}
+  .res-sub{color:var(--ink-2);font-size:16px;margin-bottom:8px;}
+  .res-why{background:var(--soft);border-left:4px solid var(--orange);border-radius:0 8px 8px 0;padding:14px 18px;font-size:14px;color:var(--ink-2);margin:16px 0 20px;}
+  .res-why b{color:var(--ink);}
+  .dl{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  @media(max-width:560px){.dl{grid-template-columns:1fr;}}
+  a.dlbtn{display:flex;align-items:center;gap:12px;padding:16px 18px;border-radius:12px;text-decoration:none;transition:all .15s;border:1px solid var(--line);}
+  a.dlbtn.prop{background:var(--ink);color:#fff;border-color:var(--ink);}
+  a.dlbtn.prop:hover{background:var(--ink-2);}
+  a.dlbtn.brief{background:var(--white);color:var(--ink);}
+  a.dlbtn.brief:hover{border-color:var(--orange);background:#FFFBF6;}
+  a.dlbtn .ic{font-size:24px;}
+  a.dlbtn .t{font-size:15px;font-weight:700;}
+  a.dlbtn .s{font-size:12px;opacity:.7;font-weight:500;}
+  .alts{margin-top:18px;font-size:13px;color:var(--grey);}
+  .alts a{color:var(--orange-d);font-weight:600;cursor:pointer;text-decoration:none;}
+  .alts a:hover{text-decoration:underline;}
+
+  /* STATS */
+  .stats-head{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:18px;}
+  .stats-total{font-size:13px;color:var(--grey);font-weight:600;}
+  .bar-row{margin-bottom:16px;}
+  .bar-label{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;}
+  .bar-label .nm{font-size:14px;font-weight:700;}
+  .bar-label .vl{font-size:14px;font-weight:700;color:var(--orange-d);}
+  .bar-label .ct{font-size:12px;color:var(--grey);font-weight:500;margin-left:6px;}
+  .bar-track{height:12px;background:var(--soft);border-radius:8px;overflow:hidden;}
+  .bar-fill{height:100%;background:var(--orange);border-radius:8px;width:0;transition:width .6s cubic-bezier(.4,0,.2,1);}
+  .stats-empty{font-size:14px;color:var(--grey);font-style:italic;padding:8px 0;}
+  .stats-foot{margin-top:14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
+  .reset{font-size:12px;color:var(--grey);background:none;border:none;cursor:pointer;font-weight:600;padding:0;}
+  .reset:hover{color:#A32D2D;}
+  .stats-note{font-size:12px;color:var(--grey);}
+
+  footer{padding:30px 0 50px;text-align:center;color:var(--grey);font-size:12px;}
+  footer b{color:var(--ink);}
+
+  /* ---------- TABLET (≤768px) ---------- */
+  @media(max-width:768px){
+    .wrap{padding:0 16px;}
+    .hero h1{font-size:28px;}
+    .hero p{font-size:15px;}
+    .card{padding:22px 18px;border-radius:14px;}
+    .card .lead{font-size:18px;}
+    .res-title{font-size:26px;}
+  }
+
+  /* ---------- MOBILE (≤560px) ---------- */
+  @media(max-width:560px){
+    .wrap{padding:0 14px;}
+    header img{height:36px;}
+    .htag{font-size:10px;letter-spacing:1.5px;}
+    .hero{padding:6px 0 30px;}
+    .hero h1{font-size:24px;}
+    .hero p{font-size:14px;}
+    main{padding:22px 0 48px;}
+    .card{padding:18px 15px;margin-bottom:18px;}
+    .card h2{font-size:12px;}
+    .card .lead{font-size:17px;margin-bottom:16px;}
+    .group h3{font-size:13.5px;}
+    /* one checkbox per row, comfortable tap targets */
+    .opts{grid-template-columns:1fr;gap:8px;}
+    label.opt{padding:13px 14px;}
+    label.opt span{font-size:14px;}
+    /* full-width stacked buttons, easy to tap */
+    .actions{flex-direction:column;align-items:stretch;}
+    .actions button{width:100%;padding:15px;}
+    .hint{text-align:center;}
+    .res-title{font-size:23px;}
+    .res-sub{font-size:15px;}
+    .dl{grid-template-columns:1fr;}
+    a.dlbtn{padding:16px;}
+    .stats-foot{flex-direction:column;align-items:flex-start;}
+  }
+
+  /* larger tap targets + no hover-stuck states on touch devices */
+  @media(hover:none){
+    label.opt:hover{border-color:var(--line);background:var(--white);}
+    label.opt.on{border-color:var(--orange);background:#FFF4E8;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="hbar">
+      <img src="public/logo.png" alt="Mais Consultores Compasso">
+      <span class="htag">Ferramenta interna</span>
+    </div>
+    <div class="hero">
+      <h1>Localizador de <span class="o">Propostas</span></h1>
+      <p>Identifique o tipo de proprietário que tem em mãos. A ferramenta indica a proposta irresistível que melhor se ajusta — e entrega-lhe a apresentação e o brief de marketing em PDF.</p>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div class="card">
+    <h2>Passo 1 · Perfil do proprietário</h2>
+    <p class="lead">Marque tudo o que descreve a situação do proprietário</p>
+    <div id="form"></div>
+    <div class="actions">
+      <button class="btn-primary" id="findBtn" disabled>Encontrar proposta</button>
+      <button class="btn-ghost" id="clearBtn">Limpar</button>
+      <span class="hint" id="countHint">0 características selecionadas</span>
+    </div>
+  </div>
+
+  <div class="card" id="result">
+    <div class="res-head"><span class="tag">Proposta recomendada</span></div>
+    <div class="res-title" id="resTitle"></div>
+    <div class="res-sub" id="resSub"></div>
+    <div class="res-why" id="resWhy"></div>
+    <div class="dl">
+      <a class="dlbtn prop" id="dlProp" href="#" download>
+        <span class="ic">&#128196;</span>
+        <span><span class="t">Proposta (cliente)</span><br><span class="s">Apresentação em PDF</span></span>
+      </a>
+      <a class="dlbtn brief" id="dlBrief" href="#" download>
+        <span class="ic">&#128202;</span>
+        <span><span class="t">Brief de marketing</span><br><span class="s">Documento interno em PDF</span></span>
+      </a>
+    </div>
+    <div style="font-size:12px;color:var(--grey);margin-top:12px;display:flex;align-items:flex-start;gap:7px;">
+      <span style="color:var(--orange-d);font-weight:700;">&#9888;</span>
+      <span>O <b>brief de marketing</b> é um documento interno de apoio à equipa — não deve ser enviado ao cliente. Ao cliente envie apenas a proposta.</span>
+    </div>
+    <div class="alts" id="alts"></div>
+  </div>
+
+  <div class="card">
+    <div class="stats-head">
+      <div><h2>Procura por tipo de proposta</h2><div class="stats-total" id="statsTotal">Ainda sem downloads registados</div></div>
+    </div>
+    <div id="bars"></div>
+    <div class="stats-foot">
+      <span class="stats-note">Contagem guardada neste navegador. Conta cada download de proposta.</span>
+      <button class="reset" id="resetStats">Repor contagem</button>
+    </div>
+  </div>
+
+</main>
+
+<footer class="wrap">
+  <p>Mais Consultores Compasso · Localizador de Propostas — ferramenta interna de apoio à equipa.<br>
+  As propostas são pontos de partida; <b>adapte sempre ao caso concreto</b> antes de enviar ao cliente.</p>
+</footer>
+
+<script>
+// ---------- PROPOSTAS ----------
+const PROPOSTAS = {
+  casa90: {
+    nome: "Casa Vendida em 90",
+    sub: "Para quem tem pressa e quer risco zero.",
+    prop: "public/propostas/Casa_Vendida_em_90_Apresentacao.pdf",
+    brief: "public/propostas/Casa_Vendida_em_90_BRIEF_Marketing.pdf",
+  },
+  semarrep: {
+    nome: "Sem Arrependimentos",
+    sub: "Para quem tem horror a vender abaixo do valor.",
+    prop: "public/propostas/Sem_Arrependimentos_Apresentacao.pdf",
+    brief: "public/propostas/Sem_Arrependimentos_BRIEF_Marketing.pdf",
+  },
+  patrimonio: {
+    nome: "Património a Render",
+    sub: "Para quem tem imóvel parado a render mal.",
+    prop: "public/propostas/Patrimonio_a_Render_Apresentacao.pdf",
+    brief: "public/propostas/Patrimonio_a_Render_BRIEF_Marketing.pdf",
+  },
+  mudanca: {
+    nome: "Mudança Sincronizada",
+    sub: "Para quem quer trocar de casa sem ficar no meio.",
+    prop: "public/propostas/Mudanca_Sincronizada_Apresentacao.pdf",
+    brief: "public/propostas/Mudanca_Sincronizada_BRIEF_Marketing.pdf",
+  },
+};
+const ORDER = ["casa90","semarrep","patrimonio","mudanca"];
+
+// ---------- CARACTERÍSTICAS (checkboxes) com pesos por proposta ----------
+// Agrupadas por tema. Cada opção soma pontos às propostas indicadas.
+const GROUPS = [
+  { title: "Objetivo e situação", items: [
+    { id:"quer_mudar", txt:"Quer mudar de casa (precisa de mais espaço, downsizing ou mudar de zona)", w:{mudanca:5} },
+    { id:"tem_outra", txt:"Vai precisar de comprar outra casa a seguir", w:{mudanca:4} },
+    { id:"so_vender", txt:"Só quer vender, não vai comprar nada a seguir", w:{casa90:2, semarrep:2} },
+    { id:"varios_imoveis", txt:"Tem mais do que um imóvel / vários imóveis", w:{patrimonio:4} },
+    { id:"imovel_parado", txt:"Tem um imóvel parado, fechado ou que só dá despesa", w:{patrimonio:4} },
+    { id:"arrendado_rende_mal", txt:"Tem um imóvel arrendado que rende pouco", w:{patrimonio:4} },
+  ]},
+  { title: "Urgência e tempo", items: [
+    { id:"pressa", txt:"Tem pressa em vender / quer resolver depressa", w:{casa90:4} },
+    { id:"sem_pressa", txt:"Não tem pressa, prefere esperar pelo melhor resultado", w:{semarrep:3} },
+    { id:"meses_mercado", txt:"A casa já está no mercado há meses sem vender", w:{casa90:3} },
+    { id:"adia_anos", txt:"Anda a adiar a decisão há anos", w:{patrimonio:3} },
+  ]},
+  { title: "Motivação e contexto pessoal", items: [
+    { id:"heranca_divorcio", txt:"Vende por herança, divórcio ou dinheiro preso", w:{casa90:3, patrimonio:1} },
+    { id:"casa_familia", txt:"É casa de família, com carga afetiva", w:{semarrep:3} },
+    { id:"conflito_familiar", txt:"Há conflito familiar / vários herdeiros sobre o imóvel", w:{patrimonio:4} },
+    { id:"familia_cresce", txt:"A família cresceu e a casa ficou pequena", w:{mudanca:4} },
+  ]},
+  { title: "Receios e atitude", items: [
+    { id:"nao_pagar_adiant", txt:"Não quer pagar nada adiantado / quer risco zero", w:{casa90:3} },
+    { id:"medo_vender_barato", txt:"Tem medo de vender abaixo do que a casa vale", w:{semarrep:4} },
+    { id:"desconfia_avaliacao", txt:"Desconfia das avaliações dos mediadores", w:{semarrep:3} },
+    { id:"quer_valor_maximo", txt:"Quer extrair o valor máximo, custe o tempo que custar", w:{semarrep:4} },
+    { id:"medo_intervalo", txt:"Tem medo de ficar sem casa ou com duas prestações no meio", w:{mudanca:5} },
+    { id:"medo_inquilino", txt:"Tem receio de arrendar (inquilino que não paga)", w:{patrimonio:3} },
+  ]},
+];
+
+// IDs que, sozinhos, são sinais muito fortes (desempate a favor)
+const STRONG = { quer_mudar:"mudanca", medo_intervalo:"mudanca" };
+
+// ---------- ESTADO ----------
+const selected = new Set();
+
+// ---------- RENDER FORM ----------
+const formEl = document.getElementById('form');
+GROUPS.forEach(g => {
+  const gd = document.createElement('div'); gd.className='group';
+  const h = document.createElement('h3'); h.innerHTML = '<span class="dot"></span>'+g.title; gd.appendChild(h);
+  const od = document.createElement('div'); od.className='opts';
+  g.items.forEach(it => {
+    const lab = document.createElement('label'); lab.className='opt';
+    lab.innerHTML = '<input type="checkbox" value="'+it.id+'"><span>'+it.txt+'</span>';
+    const cb = lab.querySelector('input');
+    cb.addEventListener('change', () => {
+      if(cb.checked){selected.add(it.id); lab.classList.add('on');}
+      else{selected.delete(it.id); lab.classList.remove('on');}
+      updateCount();
+    });
+    od.appendChild(lab);
+  });
+  gd.appendChild(od); formEl.appendChild(gd);
+});
+
+function updateCount(){
+  const n = selected.size;
+  document.getElementById('countHint').textContent = n + (n===1?' característica selecionada':' características selecionadas');
+  document.getElementById('findBtn').disabled = n===0;
+}
+
+// ---------- MATCHING ----------
+function score(){
+  const sc = {casa90:0, semarrep:0, patrimonio:0, mudanca:0};
+  GROUPS.forEach(g => g.items.forEach(it => {
+    if(selected.has(it.id)) for(const k in it.w) sc[k]+=it.w[k];
+  }));
+  // strong-signal boost
+  for(const id in STRONG){ if(selected.has(id)) sc[STRONG[id]] += 3; }
+  return sc;
+}
+function rank(sc){
+  return ORDER.slice().sort((a,b)=> sc[b]-sc[a] || ORDER.indexOf(a)-ORDER.indexOf(b));
+}
+
+// ---------- RESULT ----------
+function showResult(){
+  const sc = score();
+  const r = rank(sc);
+  const winner = r[0];
+  const p = PROPOSTAS[winner];
+  document.getElementById('resTitle').textContent = p.nome;
+  document.getElementById('resSub').textContent = p.sub;
+
+  // explain: top contributing selected reasons for the winner
+  const reasons = [];
+  GROUPS.forEach(g=>g.items.forEach(it=>{ if(selected.has(it.id) && it.w[winner]) reasons.push({t:it.txt, w:it.w[winner]}); }));
+  reasons.sort((a,b)=>b.w-a.w);
+  let why = '<b>Porquê esta proposta:</b> ';
+  if(reasons.length){
+    why += 'os sinais que marcou apontam para aqui — '+reasons.slice(0,3).map(x=>'“'+x.t.toLowerCase()+'”').join(', ')+'.';
+  } else {
+    why += 'é o melhor encaixe geral para o perfil que marcou.';
+  }
+  document.getElementById('resWhy').innerHTML = why;
+
+  document.getElementById('dlProp').href = p.prop;
+  document.getElementById('dlBrief').href = p.brief;
+
+  // alternatives (next best with score > 0)
+  const alts = r.slice(1).filter(k=>sc[k]>0);
+  const altEl = document.getElementById('alts');
+  if(alts.length){
+    altEl.innerHTML = 'Alternativas com encaixe: ' + alts.map(k=>'<a data-k="'+k+'">'+PROPOSTAS[k].nome+'</a>').join(' · ');
+    altEl.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>switchTo(a.dataset.k)));
+  } else { altEl.innerHTML=''; }
+
+  document.getElementById('result').classList.add('show');
+  document.getElementById('result').scrollIntoView({behavior:'smooth', block:'start'});
+}
+function switchTo(k){
+  const p = PROPOSTAS[k];
+  document.getElementById('resTitle').textContent = p.nome;
+  document.getElementById('resSub').textContent = p.sub;
+  document.getElementById('resWhy').innerHTML = '<b>Alternativa escolhida manualmente.</b> Reveja se encaixa melhor no caso concreto do que a recomendação automática.';
+  document.getElementById('dlProp').href = p.prop;
+  document.getElementById('dlBrief').href = p.brief;
+}
+
+document.getElementById('findBtn').addEventListener('click', showResult);
+document.getElementById('clearBtn').addEventListener('click', ()=>{
+  selected.clear();
+  document.querySelectorAll('.opt input').forEach(c=>{c.checked=false;c.closest('.opt').classList.remove('on');});
+  updateCount();
+  document.getElementById('result').classList.remove('show');
+});
+
+// ---------- STATS (localStorage) ----------
+const LS_KEY = 'compasso_downloads_v1';
+function getStats(){ try{return JSON.parse(localStorage.getItem(LS_KEY))||{};}catch(e){return {};} }
+function saveStats(s){ try{localStorage.setItem(LS_KEY, JSON.stringify(s));}catch(e){} }
+function bump(which){ const s=getStats(); s[which]=(s[which]||0)+1; saveStats(s); renderStats(); }
+
+function renderStats(){
+  const s = getStats();
+  const total = ORDER.reduce((a,k)=>a+(s[k]||0),0);
+  const barsEl = document.getElementById('bars');
+  const totalEl = document.getElementById('statsTotal');
+  if(total===0){
+    barsEl.innerHTML = '<div class="stats-empty">Ainda sem downloads. Assim que descarregar propostas, a procura aparece aqui.</div>';
+    totalEl.textContent = 'Ainda sem downloads registados';
+    return;
+  }
+  totalEl.textContent = total + (total===1?' proposta descarregada no total':' propostas descarregadas no total');
+  barsEl.innerHTML = '';
+  // sort bars by count desc
+  ORDER.slice().sort((a,b)=>(s[b]||0)-(s[a]||0)).forEach(k=>{
+    const ct = s[k]||0;
+    const pct = total? Math.round(ct/total*100):0;
+    const row = document.createElement('div'); row.className='bar-row';
+    row.innerHTML =
+      '<div class="bar-label"><span class="nm">'+PROPOSTAS[k].nome+'<span class="ct">'+ct+(ct===1?' download':' downloads')+'</span></span><span class="vl">'+pct+'%</span></div>'+
+      '<div class="bar-track"><div class="bar-fill" style="width:0"></div></div>';
+    barsEl.appendChild(row);
+    requestAnimationFrame(()=>{ row.querySelector('.bar-fill').style.width = pct+'%'; });
+  });
+}
+
+// count a download when the PROPOSAL button is clicked (matches current shown proposal)
+document.getElementById('dlProp').addEventListener('click', ()=>{
+  // figure out which proposal is currently shown by matching href
+  const href = document.getElementById('dlProp').getAttribute('href');
+  const k = ORDER.find(key=>PROPOSTAS[key].prop===href);
+  if(k) bump(k);
+});
+
+document.getElementById('resetStats').addEventListener('click', ()=>{
+  if(confirm('Repor a contagem de downloads neste navegador?')){ saveStats({}); renderStats(); }
+});
+
+renderStats();
+updateCount();
+</script>
+</body>
+</html>
